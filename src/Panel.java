@@ -1,20 +1,15 @@
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -22,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import java.awt.Font;
 
 public class Panel extends JPanel {
     private BufferedImage background;
@@ -44,7 +40,8 @@ public class Panel extends JPanel {
     private Color shoeColor = Color.GRAY;
     private JLabel bowLabel;
     private boolean layerOnTop = true;
-    
+    private JLabel gameLabel;
+    private Font displayFont;
 
     private BufferedImage hairImage;
     private BufferedImage tintedHair;
@@ -148,7 +145,7 @@ public class Panel extends JPanel {
         // BufferedImages directly onto the panel so I have to convert them to
         // ImageIcons
 
-      // makeImage(shirtImage, "/front of dress3.png", tintedShirt, shirtLabel);
+        // makeImage(shirtImage, "/front of dress3.png", tintedShirt, shirtLabel);
 
         middleLabel = new JLabel("");
         middleLabel.setBounds(800, 380, 250, 450);
@@ -168,8 +165,8 @@ public class Panel extends JPanel {
         shoeLabel = new JLabel("");
         shoeLabel.setBounds(800, 357, 250, 500);
         shoeLabel.setOpaque(false);
-
         shoeUpdateColor();
+
         bowLabel = new JLabel("");
         bowLabel.setBounds(810, 438, 80, 50);
         bowLabel.setOpaque(false);
@@ -177,43 +174,49 @@ public class Panel extends JPanel {
         bowLabel.addMouseListener(listener);
         bowLabel.addMouseMotionListener(listener);
 
+        gameLabel = new JLabel("Decorate the Princess!");
+        gameLabel.setBounds(790, 10, 600, 20);
+        gameLabel.setOpaque(false);
+
+        displayFont = new Font("Arial", Font.BOLD, 20);
+        gameLabel.setFont(displayFont);
+
         try {
-           shirtImage = ImageIO.read(getClass().getResource("/front of dress.png"));
+            shirtImage = ImageIO.read(getClass().getResource("/front of dress.png"));
 
         } catch (IOException e) {
-          e.printStackTrace();
-       }
+            e.printStackTrace();
+        }
 
         try {
-           middleImage = ImageIO.read(getClass().getResource("/MiddleofDress6.png"));
+            middleImage = ImageIO.read(getClass().getResource("/MiddleofDress6.png"));
 
         } catch (IOException e) {
-          e.printStackTrace();
-       }
+            e.printStackTrace();
+        }
 
-       try {
-           sideImage = ImageIO.read(getClass().getResource("/SidesofDress.png"));
-
-        } catch (IOException e) {
-          e.printStackTrace();
-       }
-
-       try {
-           skinImage = ImageIO.read(getClass().getResource("/Skin.png"));
+        try {
+            sideImage = ImageIO.read(getClass().getResource("/SidesofDress.png"));
 
         } catch (IOException e) {
-          e.printStackTrace();
-       }
+            e.printStackTrace();
+        }
 
-       try {
-           shoeImage = ImageIO.read(getClass().getResource("/Shoes.png"));
+        try {
+            skinImage = ImageIO.read(getClass().getResource("/Skin.png"));
 
         } catch (IOException e) {
-          e.printStackTrace();
-       }
+            e.printStackTrace();
+        }
 
+        try {
+            shoeImage = ImageIO.read(getClass().getResource("/Shoes.png"));
 
-      tintedShirt = tintImage(shirtImage, Color.blue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        tintedShirt = tintImage(shirtImage, Color.blue);
         shirtLabel.setIcon(new ImageIcon(tintedShirt));
 
         tintedMiddle = tintImage(middleImage, Color.PINK);
@@ -229,7 +232,7 @@ public class Panel extends JPanel {
         shoeLabel.setIcon(new ImageIcon(tintedShoe));
 
         bowLabel.setIcon(new ImageIcon(bowImage));
-        
+
         // Makes sure the hair is on top of everything else
 
         layeredPane.add(hairLabel, Integer.valueOf(1));
@@ -239,12 +242,11 @@ public class Panel extends JPanel {
         layeredPane.add(skinLabel, Integer.valueOf(30));
         layeredPane.add(shoeLabel, Integer.valueOf(40));
         layeredPane.add(bowLabel, Integer.valueOf(60));
-        
+        layeredPane.add(gameLabel, Integer.valueOf(70));
 
         layeredPane.setFocusable(true);
         layeredPane.requestFocusInWindow();
     }
-
 
     private BufferedImage tintImage(BufferedImage src, Color tint) {
 
@@ -256,30 +258,30 @@ public class Panel extends JPanel {
             for (int x = 0; x < src.getWidth(); x++) {
                 // these loops read all the pixels in the image
 
-                // Read the pixel value from the original hair image.
-                // Pixel contains ARGB = alpha, red, green, blue.
+                // Reads the pixels from the original image
+                // Each pixel has alpha, red, green, and blue
                 int argb = src.getRGB(x, y);
 
-                // Extract just the alpha (transparency) component.
+                // Deals with just the alpha (transparency) component.
                 int alpha = (argb >> 24) & 0xff;
                 // alpha relates to transparency
 
                 if (alpha == 0) {
                     // The above line has all transparent pixels stay unchanged
-                    tinted.setRGB(x, y, argb); // Copy the pixel as-is.
+                    tinted.setRGB(x, y, argb); // Copy the pixel as it is
                     continue;
                 }
 
                 int r = tint.getRed();
                 int g = tint.getGreen();
                 int b = tint.getBlue();
-                // New color values from the tiny
+                // New color values from the tint
 
                 int newColor = (alpha << 24) | (r << 16) | (g << 8) | b;
                 // the numbers are bit positions
                 // Above line replaces the color with the new tint
 
-                // Store this recolored pixel inside the new "tinted" image.
+                // Stores the recolored pixels inside the new "tinted" image.
                 tinted.setRGB(x, y, newColor);
             }
         }
@@ -325,7 +327,7 @@ public class Panel extends JPanel {
         }
         g.drawImage(outline, 800, 410, null);
         g.drawImage(bowImage, 0, 0, null);
-     }
+    }
 
     public void setFrame(BufferedImage image, BufferedImage image2, BufferedImage image3, BufferedImage Image4) {
         JFrame myFrame = new JFrame("Game");
@@ -339,13 +341,7 @@ public class Panel extends JPanel {
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    // After this comment is all my code relating to mouse controls
-
-    
-
     private Point bowLocation = new Point(100, 100);
-    
-
     private Point startPoint;
 
     public void bowUpdateLocation() {
@@ -353,15 +349,10 @@ public class Panel extends JPanel {
     }
 
     private class EventListener extends MouseAdapter {
-        // MouseListener methods
 
         @Override
         public void mouseClicked(MouseEvent event) {
-            // System.out.println("Mouse Click: " + event); // Gives the entire event
             System.out.println("Mouse Click");
-            if (event.getClickCount() == 2) {
-                System.out.println("Double Clicked");
-            }
         }
 
         @Override
@@ -377,15 +368,12 @@ public class Panel extends JPanel {
         @Override
         public void mousePressed(MouseEvent event) {
             System.out.println("Mouse pressed");
-            // get the coordinates of the mouse when the drag event started
             startPoint = event.getPoint();
-
         }
 
         @Override
         public void mouseReleased(MouseEvent event) {
             System.out.println("Mouse Released");
-
         }
 
         // MouseMotionListener methods
@@ -396,7 +384,8 @@ public class Panel extends JPanel {
             // Figure out where the panel is on the screen
             Point panelLocation = getLocationOnScreen();
             // Figure out where the bow should go
-            bowLocation = new Point(screenLocation.x - panelLocation.x - startPoint.x, screenLocation.y - panelLocation.y - startPoint.y);
+            bowLocation = new Point(screenLocation.x - panelLocation.x - startPoint.x,
+                    screenLocation.y - panelLocation.y - startPoint.y);
             // Gives smooth motion to move bow
             bowUpdateLocation();
         }
@@ -424,7 +413,7 @@ public class Panel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             Color newColor = JColorChooser.showDialog(null, "Choose a color", Color.BLACK);
-            JButton button = (JButton)e.getSource();
+            JButton button = (JButton) e.getSource();
             // Magic code
             if (newColor != null && button == hairColorButton) {
                 tintedHair = tintImage(hairImage, newColor);
