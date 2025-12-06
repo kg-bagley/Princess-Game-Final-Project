@@ -27,17 +27,11 @@ public class Panel extends JPanel {
 
     private JLayeredPane layeredPane;
     private JLabel hairLabel;
-    private Color hairColor = Color.BLACK;
     private JLabel shirtLabel;
-    private Color shirtColor = Color.BLUE;
     private JLabel middleLabel;
-    private Color middleColor = Color.PINK;
     private JLabel sideLabel;
-    private Color sideColor = Color.GREEN;
     private JLabel skinLabel;
-    private Color skinColor = Color.orange;
     private JLabel shoeLabel;
-    private Color shoeColor = Color.GRAY;
     private JLabel bowLabel;
     private boolean layerOnTop = true;
     private JLabel gameLabel;
@@ -69,8 +63,6 @@ public class Panel extends JPanel {
     private JButton sideColorButton;
     private JButton skinColorButton;
     private JButton shoeColorButton;
-    // These replace the ImageIcon hairImage because Imageicons can't be
-    // recolored/tinted
 
     public Panel(BufferedImage image, BufferedImage image2, BufferedImage Image3, BufferedImage Image4) {
 
@@ -130,23 +122,6 @@ public class Panel extends JPanel {
         shirtLabel.setOpaque(false);
         shirtUpdateColor();
 
-        try {
-            hairImage = ImageIO.read(getClass().getResource("/WhiteHair3.png"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // I had to use a try/catch block because ImageIO has lots of potential errors
-        // and Java wants to
-        // make sure the program doesn't mess up if those errors occur
-        tintedHair = tintImage(hairImage, Color.BLACK); // Tint the original hair to black
-        hairLabel.setIcon(new ImageIcon(tintedHair));
-        // because I am using Swing components (Jpanel, JLayeredPane, etc.) I cannot put
-        // BufferedImages directly onto the panel so I have to convert them to
-        // ImageIcons
-
-        // makeImage(shirtImage, "/front of dress3.png", tintedShirt, shirtLabel);
-
         middleLabel = new JLabel("");
         middleLabel.setBounds(800, 380, 250, 450);
         middleLabel.setOpaque(false);
@@ -180,6 +155,16 @@ public class Panel extends JPanel {
 
         displayFont = new Font("Arial", Font.BOLD, 20);
         gameLabel.setFont(displayFont);
+
+        try {
+            hairImage = ImageIO.read(getClass().getResource("/WhiteHair3.png"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // I had to use a try/catch block because ImageIO has lots of potential errors
+        // and Java wants to
+        // make sure the program doesn't mess up if those errors occur
 
         try {
             shirtImage = ImageIO.read(getClass().getResource("/front of dress.png"));
@@ -216,6 +201,9 @@ public class Panel extends JPanel {
             e.printStackTrace();
         }
 
+        tintedHair = tintImage(hairImage, Color.BLACK); // Tint the original hair to black
+        hairLabel.setIcon(new ImageIcon(tintedHair));
+
         tintedShirt = tintImage(shirtImage, Color.blue);
         shirtLabel.setIcon(new ImageIcon(tintedShirt));
 
@@ -246,6 +234,18 @@ public class Panel extends JPanel {
 
         layeredPane.setFocusable(true);
         layeredPane.requestFocusInWindow();
+    }
+
+    public void setFrame(BufferedImage image, BufferedImage image2, BufferedImage image3, BufferedImage Image4) {
+        JFrame myFrame = new JFrame("Game");
+
+        JPanel primary = new JPanel();
+        myFrame.getContentPane().add(primary);
+        Panel panel = new Panel(image, image2, image3, Image4);
+        primary.add(panel);
+        myFrame.pack();
+        myFrame.setVisible(true);
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private BufferedImage tintImage(BufferedImage src, Color tint) {
@@ -289,27 +289,21 @@ public class Panel extends JPanel {
     }
 
     public void hairUpdateColor() {
-        hairLabel.setBackground(hairColor);
     }
 
     public void shirtUpdateColor() {
-        shirtLabel.setBackground(shirtColor);
     }
 
     public void middleUpdateColor() {
-        middleLabel.setBackground(middleColor);
     }
 
     public void sideUpdateColor() {
-        sideLabel.setBackground(sideColor);
     }
 
     public void skinUpdateColor() {
-        skinLabel.setBackground(skinColor);
     }
 
     public void shoeUpdateColor() {
-        shoeLabel.setBackground(shoeColor);
     }
 
     @Override
@@ -327,18 +321,6 @@ public class Panel extends JPanel {
         }
         g.drawImage(outline, 800, 410, null);
         g.drawImage(bowImage, 0, 0, null);
-    }
-
-    public void setFrame(BufferedImage image, BufferedImage image2, BufferedImage image3, BufferedImage Image4) {
-        JFrame myFrame = new JFrame("Game");
-
-        JPanel primary = new JPanel();
-        myFrame.getContentPane().add(primary);
-        Panel panel = new Panel(image, image2, image3, Image4);
-        primary.add(panel);
-        myFrame.pack();
-        myFrame.setVisible(true);
-        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private Point bowLocation = new Point(100, 100);
@@ -376,7 +358,6 @@ public class Panel extends JPanel {
             System.out.println("Mouse Released");
         }
 
-        // MouseMotionListener methods
         @Override
         public void mouseDragged(MouseEvent event) {
             // Figure out where the mouse is on the screen
@@ -414,7 +395,7 @@ public class Panel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             Color newColor = JColorChooser.showDialog(null, "Choose a color", Color.BLACK);
             JButton button = (JButton) e.getSource();
-            // Magic code
+
             if (newColor != null && button == hairColorButton) {
                 tintedHair = tintImage(hairImage, newColor);
                 hairLabel.setIcon(new ImageIcon(tintedHair));
